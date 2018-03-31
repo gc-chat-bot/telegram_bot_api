@@ -1,1 +1,17 @@
-{}
+{
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "url": "",
+    "database": "scraping",
+    "password": "",
+    "name": "mongo",
+    "user": "",
+    "connector": "mongodb",
+    "debug": true,
+    "lazyConnect": true,
+    "autoReconnect": true,
+    "reconnectTries": 2000,
+    "reconnectInterval": 1000
+  }
+}
