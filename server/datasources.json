@@ -1,17 +1,23 @@
 {
-  "mongo": {
+  "mongodb": {
     "host": "localhost",
     "port": 27017,
-    "url": "",
+    "url": "mongodb://localhost/scraping",
     "database": "scraping",
     "password": "",
-    "name": "mongo",
+    "name": "testdb",
     "user": "",
-    "connector": "mongodb",
     "debug": true,
     "lazyConnect": true,
+    "connector": "mongodb",
     "autoReconnect": true,
     "reconnectTries": 2000,
     "reconnectInterval": 1000
+  },
+  "db": {
+    "name": "db",
+    "localStorage": "",
+    "file": "",
+    "connector": "memory"
   }
 }

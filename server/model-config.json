@@ -14,7 +14,7 @@
     ]
   },
   "DataSet": {
-    "dataSource": "mongo",
+    "dataSource": "mongodb",
     "public": true
   }
 }
