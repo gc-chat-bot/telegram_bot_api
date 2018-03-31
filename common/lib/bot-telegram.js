@@ -1,4 +1,5 @@
 const Promise = require('bluebird');
+const moment = require('moment');
 const app = require('../../server/server');
 Promise.config({
   cancellation: true
@@ -17,7 +18,6 @@ bot.on('polling_error', (error) => {
 });
 
 bot.on('message', async function onMessage(msg) {
-
     const session = await app.models.Session.findOne({ 
         where: {
             state: "opened",
@@ -26,6 +26,7 @@ bot.on('message', async function onMessage(msg) {
     });
 
     if ( msg.text === "create session" ) {
+        if (session) await session.updateAttribute('state','closed');
         await createSession(msg);
         return;
     }
@@ -42,7 +43,7 @@ bot.on('message', async function onMessage(msg) {
 
     const askSolvedProblem = await session.dialog.findOne({
         where: {
-            initator: "bot",
+            initiator: "Infopulse bot",
             text: "Is your problem solved?",
             state: "asking"
         }
@@ -52,9 +53,15 @@ bot.on('message', async function onMessage(msg) {
         const valid = checkUserMessage(msg.text);
         let text = "Close session. Good day";
         if (!valid) {
+            await session.dialog.create({
+                initiator: msg.chat.first_name + " " + msg.chat.last_name,
+                text: msg.user,
+                date: msg.date
+            });
+
             Promise.all([
                 session.dialog.create({
-                    initator: "bot",
+                    initiator: "Infopulse bot",
                     text: text,
                     date: msg.date
                 }),
@@ -65,9 +72,14 @@ bot.on('message', async function onMessage(msg) {
         }
 
         text = "Enter your email for feedback, please";
+        await session.dialog.create({
+            initiator: msg.chat.first_name + " " + msg.chat.last_name,
+            text: msg.text,
+            date: msg.date
+        });
         Promise.all([
             session.dialog.create({
-                initator: "bot",
+                initiator: "Infopulse bot",
                 text: text,
                 date: msg.date
             }),
@@ -77,15 +89,16 @@ bot.on('message', async function onMessage(msg) {
         return;
     }
 
-    const enterEmail = await session.dialog.findOne({
+    const enteredEmail = await session.dialog.findOne({
         where: {
-            initator: "bot",
+            initiator: "Infopulse bot",
             text: "Enter your email for feedback, please"
         }
     });
 
-    if (enterEmail) {
-        const emailEnetered = await closeSession(session, msg);
+    if (enteredEmail) {
+        await closeSession(session, msg);
+        await sendEmail(session, msg);
         return;
     }
 
@@ -104,7 +117,7 @@ async function createSession(msg){
 
     await new_session.dialog.create({
         sessionId: new_session.id, 
-        initator: "bot",
+        initiator: "Infopulse bot",
         text: "Hi. How can I help you?",
         date: msg.date
     });
@@ -115,7 +128,7 @@ async function createSession(msg){
 async function endSession(session, msg){
     bot.sendMessage(msg.chat.id, "Is your problem solved?");
     await session.dialog.create({
-        initator: "bot",
+        initiator: "Infopulse bot",
         text: "Is your problem solved?",
         date: msg.date,
         state: "asking"
@@ -124,9 +137,14 @@ async function endSession(session, msg){
 
 async function closeSession(session, msg) {
     let text = "Close session. Good day";
+    await session.dialog.create({
+        initiator: msg.chat.first_name + " " + msg.chat.last_name,
+        text: msg.text,
+        date: msg.date
+    });
     Promise.all([
         session.dialog.create({
-            initator: "bot",
+            initiator: "Infopulse bot",
             text: text,
             date: msg.date
         }),
@@ -137,7 +155,7 @@ async function closeSession(session, msg) {
 
 async function dialogueWithUser(session, msg){
     await session.dialog.create({
-        initator: "user",
+        initiator: msg.chat.first_name + " " + msg.chat.last_name,
         text: msg.text,
         date: msg.date
     });
@@ -158,7 +176,7 @@ async function dialogueWithUser(session, msg){
         });  
 
         await session.dialog.create({
-            initator: "bot",
+            initiator: "Infopulse bot",
             text: result.text,
             date: msg.date
         });
@@ -167,6 +185,34 @@ async function dialogueWithUser(session, msg){
     } catch (error) {
         console.log("error", error);
     }
+}
+
+async function sendEmail(session, msg){
+    const dialogs = await session.dialog.find({});
+    let list = '<h2> Chat Messages </h2>';
+   
+    // dialogs.map(dialog => {
+    //     list = list + `<li> ${dialog.initiator}: ${dialog.text} </li>`;
+    // })
+    const containerStyle = `border: 2px solid #dedede; background-color: #f1f1f1;border-radius: 5px;padding: 10px;margin: 10px 0;`;
+    dialogs.map(dialog => {
+        let darker ='';
+        if (dialog.initiator === "Infopulse bot") {
+            darker = `border-color: #ccc;background-color: #ddd;`;
+        }   
+
+        list = list +  `<div style="${containerStyle + darker}">
+                            <span  style="width:100%;"> <b>${dialog.initiator}</b></span> 
+                            <p>${dialog.text}</p>
+                        </div>`;
+    });
+    const html = list;
+    await app.models.Email.send({
+        to: "infopulseoperator@gmail.com",
+        from: msg.text,
+        subject: 'Bot dialog',
+        html: html
+      });
 }
 
 module.exports =  {

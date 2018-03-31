@@ -13,6 +13,9 @@
       "./mixins"
     ]
   },
+  "Email": {
+    "dataSource": "emailDs"
+  },
   "DataSet": {
     "dataSource": "mongodb",
     "public": true
