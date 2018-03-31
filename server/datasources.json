@@ -1,8 +1,8 @@
 {
   "mongodb": {
-    "host": "localhost",
+    "host": "mongodb",
     "port": 27017,
-    "url": "mongodb://localhost/scraping",
+    "url": "mongodb://mongodb/scraping",
     "database": "scraping",
     "password": "",
     "name": "mongodb",

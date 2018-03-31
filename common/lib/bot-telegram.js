@@ -21,7 +21,7 @@ bot.on('message', async function onMessage(msg) {
             headers:{
                 "Content-Type": "application/json"
             },
-            url:'http://0.0.0.0:3001/handle',
+            url:'http://pythonservice:3001/handle',
             method: 'POST',
             body: {
                 "text": msg.text,
