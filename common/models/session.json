@@ -1,0 +1,27 @@
+{
+  "name": "Session",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "chatId": {
+      "type": "string",
+      "required": true
+    },
+    "state": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "dialog": {
+      "type": "hasMany",
+      "model": "Dialog",
+      "foreignKey": "sessionId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

@@ -20,5 +20,13 @@
   "TelegramBot": {
     "dataSource": "db",
     "public": true
+  },
+  "Session": {
+    "dataSource": "mongodb",
+    "public": true
+  },
+  "Dialog": {
+    "dataSource": "mongodb",
+    "public": true
   }
 }

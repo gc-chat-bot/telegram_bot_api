@@ -1,0 +1,27 @@
+{
+  "name": "Dialog",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "initiator": {
+      "type": "string"
+    },
+    "date": {
+      "type": "number"
+    },
+    "text": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+  },
+  "acls": [],
+  "methods": {}
+}
