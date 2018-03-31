@@ -5,7 +5,7 @@
     "url": "mongodb://localhost/scraping",
     "database": "scraping",
     "password": "",
-    "name": "testdb",
+    "name": "mongodb",
     "user": "",
     "debug": true,
     "lazyConnect": true,
