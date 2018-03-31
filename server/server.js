@@ -2,7 +2,11 @@
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
-
+process.env["NTBA_FIX_319"] = 1;
+const Promise = require('bluebird');
+Promise.config({
+  cancellation: true
+});
 var app = module.exports = loopback();
 
 app.start = function() {

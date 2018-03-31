@@ -16,5 +16,9 @@
   "DataSet": {
     "dataSource": "mongodb",
     "public": true
+  },
+  "TelegramBot": {
+    "dataSource": "db",
+    "public": true
   }
 }

@@ -45,11 +45,23 @@ async function appDevelopment(app) {
             text: result[3+i]
         });
     }
-    console.log(json);
 
-    result.map((value, index) => {
-        console.log(value + " index: " + index);
-    });
+    //Scope of Application Development Services
+    for (i=0; i<=21; i++) {
+        json.push({
+            category: result[26],
+            text: result[26+i]
+        });
+    }
+
+    //Related Case Studies
+    for (i=0; i<=8; i++) {
+        json.push({
+            category: result[48],
+            text: result[48+i]
+        });
+    }
+    
     fsWriteFile = util.promisify(fs.writeFile);
     await fsWriteFile('../datasets/application-development.json', JSON.stringify(json));
     console.log("file saved");
