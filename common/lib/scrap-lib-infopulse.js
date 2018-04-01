@@ -9,7 +9,9 @@ const options = { headers: { 'Content-Type': 'application/json' } };
 
 module.exports = function (loopbackApplication){
    return {
-    appDevelopment: appDevelopment
+    appDevelopment: appDevelopment,
+    evryAppManagement: evryAppManagement,
+    appOperations: appOperations
    };
 }
 
@@ -67,10 +69,102 @@ async function appDevelopment(app) {
     console.log("file saved");
 }
 
+async function evryAppManagement(app){
+    let result = [];
+    const URL = app.get('evryUrl')+'consulting/application-management/';
+    const html = await getHTML(URL);
+    let $ = cheerio.load(html.body, {
+        normalizeWhitespace: true
+    });
+    const article = 'html body div.evo-container div.evo-container-inner section.article-module div';
+    $(`${article}`).attr('data-block', 'h2')
+    .each((index, chunk) => {
+        result.push($(chunk).text().split("\n").filter((value => {
+            return (value.replace(/\s/g, '')) 
+        })));
+    });
+    const json = [];
+    result = _.flatten(result);
+
+    // Application management
+    for (let i=2; i<10; i++) {
+        json.push({
+            category: 'Application management',
+            text: result[i]
+        });
+    }
+
+    fsWriteFile = util.promisify(fs.writeFile);
+    await fsWriteFile('../datasets/application-management.json', JSON.stringify(json));
+    console.log("file saved");
+}
+
+async function appOperations(app){
+    let result = [];
+    const URL = app.get('evryUrl')+'infrastructure/application-operations/';
+    const html = await getHTML(URL);
+    let $ = cheerio.load(html.body, {
+        normalizeWhitespace: true
+    });
+    const article = 'html body div.evo-container div.evo-container-inner section.article-module div';
+    $(`${article}`).attr('data-block', 'h2')
+    .each((index, chunk) => {
+        result.push($(chunk).text().split("\n").filter((value => {
+            return (value.replace(/\s/g, '')) 
+        })));
+    });
+    const json = [];
+    result = _.flatten(result);
+    result.map((value, index) => {
+        console.log(`${value}  ${index}`);
+    })
+    for (let i=7; i<39; i++) {
+        json.push({
+            category: 'Application operations',
+            text: result[i]
+        });
+    }
+    fsWriteFile = util.promisify(fs.writeFile);
+    await fsWriteFile('../datasets/application-operations.json', JSON.stringify(json));
+    console.log("file saved");
+
+}
+
+async function mainCrawler(){
+    let result = [];
+    const URL = 'https://www.evry.com/en/what-we-do/services-a-z/services-a-z/';
+    const html = await getHTML(URL);
+    let $ = cheerio.load(html.body, {
+        normalizeWhitespace: true
+    });
+    const article = 'html body div.evo-container div.evo-container-inner section.focus-module #block_51627';
+    $(`${article}`)
+    .each((index, chunk) => {
+        $(chunk).attr('data-block','news').children('a').each(async (childIndex, childChunk) => {
+            const html = await getHTML(childChunk);
+            const childArticle = 'html body div.evo-container div.evo-container-inner section.article-module div';
+            $(`${childArticle}`).attr('data-block', 'h2')
+            .each((index, chunk) => {
+                result.push($(chunk).text().split("\n").filter((value => {
+                    return (value.replace(/\s/g, '')) 
+                })));
+            });
+            const json = [];
+            result = _.flatten(result);
+            fsWriteFile = util.promisify(fs.writeFile);
+            await fsWriteFile('../datasets/maindataset.json', JSON.stringify(json));
+            console.log("file saved");
+        });
+    });
+    const json = [];
+    result = _.flatten(result);
+}
+
+
 
 async function getHTML(URL) {   
     return new Promise( (resolve, reject) => {
-        needle.post(URL,{},options,(err, data) => {
+        needle.get(URL,(err, data) => {
             if (err) getHTML(URL);
             resolve(data);
         });

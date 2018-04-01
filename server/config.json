@@ -3,6 +3,7 @@
   "host": "0.0.0.0",
   "port": 3000,
   "scrapUrl": "https://www.infopulse.com/services",
+  "evryUrl":"https://www.evry.com/en/what-we-do/services/",
   "remoting": {
     "context": false,
     "rest": {
