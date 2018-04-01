@@ -18,6 +18,7 @@ bot.on('polling_error', (error) => {
 });
 
 bot.on('message', async function onMessage(msg) {
+    console.log(moment().valueOf());
     const session = await app.models.Session.findOne({ 
         where: {
             state: "opened",
@@ -56,14 +57,14 @@ bot.on('message', async function onMessage(msg) {
             await session.dialog.create({
                 initiator: msg.chat.first_name + " " + msg.chat.last_name,
                 text: msg.user,
-                date: msg.date
+                date: moment().valueOf()
             });
 
             Promise.all([
                 session.dialog.create({
                     initiator: "Infopulse bot",
                     text: text,
-                    date: msg.date
+                    date: moment().valueOf()
                 }),
                 session.updateAttribute('state','closed')
             ]);
@@ -75,13 +76,13 @@ bot.on('message', async function onMessage(msg) {
         await session.dialog.create({
             initiator: msg.chat.first_name + " " + msg.chat.last_name,
             text: msg.text,
-            date: msg.date
+            date: moment().valueOf()
         });
         Promise.all([
             session.dialog.create({
                 initiator: "Infopulse bot",
                 text: text,
-                date: msg.date
+                date: moment().valueOf()
             }),
             askSolvedProblem.updateAttribute('state','answered')
         ]);
@@ -119,7 +120,7 @@ async function createSession(msg){
         sessionId: new_session.id, 
         initiator: "Infopulse bot",
         text: "Hi. How can I help you?",
-        date: msg.date
+        date: moment().valueOf()
     });
 
     bot.sendMessage(msg.chat.id, "Hi. How can I help you?");
@@ -130,7 +131,7 @@ async function endSession(session, msg){
     await session.dialog.create({
         initiator: "Infopulse bot",
         text: "Is your problem solved?",
-        date: msg.date,
+        date: moment().valueOf(),
         state: "asking"
     });
 }
@@ -140,13 +141,13 @@ async function closeSession(session, msg) {
     await session.dialog.create({
         initiator: msg.chat.first_name + " " + msg.chat.last_name,
         text: msg.text,
-        date: msg.date
+        date: moment().valueOf()
     });
     Promise.all([
         session.dialog.create({
             initiator: "Infopulse bot",
             text: text,
-            date: msg.date
+            date: moment().valueOf()
         }),
         session.updateAttribute('state','closed')
     ]);
@@ -157,7 +158,7 @@ async function dialogueWithUser(session, msg){
     await session.dialog.create({
         initiator: msg.chat.first_name + " " + msg.chat.last_name,
         text: msg.text,
-        date: msg.date
+        date: moment().valueOf()
     });
 
     try {
@@ -178,7 +179,7 @@ async function dialogueWithUser(session, msg){
         await session.dialog.create({
             initiator: "Infopulse bot",
             text: result.text,
-            date: msg.date
+            date: moment().valueOf()
         });
 
         bot.sendMessage(result.chat_id, result.text);   
