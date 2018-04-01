@@ -13,6 +13,10 @@ const bot = new TelegramBot(token, {
     polling: true
 });
 
+function timeout(time){
+    return new Promise((res, rej) => setTimeout(() => {}, time));
+}
+
 bot.on('polling_error', (error) => {
     console.log(error.code);  // => 'EFATAL'
 });
@@ -59,7 +63,6 @@ bot.on('message', async function onMessage(msg) {
                 text: msg.user,
                 date: moment().valueOf()
             });
-
             Promise.all([
                 session.dialog.create({
                     initiator: "Infopulse bot",
@@ -189,7 +192,9 @@ async function dialogueWithUser(session, msg){
 }
 
 async function sendEmail(session, msg){
-    const dialogs = await session.dialog.find({});
+    const dialogs = await session.dialog.find({
+        order: 'date DESC'
+    });
     let list = '<h2> Chat Messages </h2>';
    
     // dialogs.map(dialog => {
