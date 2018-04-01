@@ -75,7 +75,7 @@ bot.on('message', async function onMessage(msg) {
             return;
         }
 
-        text = "Enter your email for feedback, please";
+        text = "Please provide us email address and our operator will help you";
         await session.dialog.create({
             initiator: msg.chat.first_name + " " + msg.chat.last_name,
             text: msg.text,
@@ -96,7 +96,7 @@ bot.on('message', async function onMessage(msg) {
     const enteredEmail = await session.dialog.findOne({
         where: {
             initiator: "Infopulse bot",
-            text: "Enter your email for feedback, please"
+            text: "Please provide us email address and our operator will help you"
         }
     });
 
@@ -193,7 +193,7 @@ async function dialogueWithUser(session, msg){
 
 async function sendEmail(session, msg){
     const dialogs = await session.dialog.find({
-        order: 'date DESC'
+        order: 'date ASC'
     });
     let list = '<h2> Chat Messages </h2>';
    
