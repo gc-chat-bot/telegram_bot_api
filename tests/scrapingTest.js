@@ -14,11 +14,14 @@ describe('Data Set test', function() {
 //     const result = await func(); 
 //   });
 
-  it('appOperations func', async () =>  {
-    const func = util.promisify(app.models.DataSet.evryAppOperations)
+  // it('appOperations func', async () =>  {
+  //   const func = util.promisify(app.models.DataSet.evryAppOperations)
+  //   const result = await func(); 
+  // });
+
+  it('dataOperations func', async () =>  {
+    const func = util.promisify(app.models.DataSet.dataOperations)
     const result = await func(); 
   });
-
-  
 
 });

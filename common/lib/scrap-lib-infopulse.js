@@ -11,7 +11,8 @@ module.exports = function (loopbackApplication){
    return {
     appDevelopment: appDevelopment,
     evryAppManagement: evryAppManagement,
-    appOperations: appOperations
+    appOperations: appOperations,
+    dataOperations: dataOperations
    };
 }
 
@@ -115,9 +116,6 @@ async function appOperations(app){
     });
     const json = [];
     result = _.flatten(result);
-    result.map((value, index) => {
-        console.log(`${value}  ${index}`);
-    })
     for (let i=7; i<39; i++) {
         json.push({
             category: 'Application operations',
@@ -127,7 +125,40 @@ async function appOperations(app){
     fsWriteFile = util.promisify(fs.writeFile);
     await fsWriteFile('../datasets/application-operations.json', JSON.stringify(json));
     console.log("file saved");
+}
 
+async function dataOperations(app){
+    let result = [];
+    const URL = app.get('evryUrl')+'infrastructure/database-operations/';
+    const html = await getHTML(URL);
+    let $ = cheerio.load(html.body, {
+        normalizeWhitespace: true
+    });
+    const article = 'html body div.evo-container div.evo-container-inner section.article-module div';
+    $(`${article}`).attr('data-block', 'h2')
+    .each((index, chunk) => {
+        result.push($(chunk).text().split("\n").filter((value => {
+            return (value.replace(/\s/g, '')) 
+        })));
+    });
+    const json = [];
+    result = _.flatten(result);
+
+    for (let i=1; i<6; i++) {
+        json.push({
+            category: 'Database operations',
+            text: result[i]
+        });
+    }
+    for (let i=15; i<23; i++) {
+        json.push({
+            category: 'Database operations',
+            text: result[i]
+        });
+    }
+    fsWriteFile = util.promisify(fs.writeFile);
+    await fsWriteFile('../datasets/database-operations.json', JSON.stringify(json));
+    console.log("file saved");
 }
 
 async function mainCrawler(){

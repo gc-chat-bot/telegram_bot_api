@@ -23,6 +23,13 @@ module.exports = function(Dataset) {
         });
     }
 
+    Dataset.dataOperations = function(cb) {
+        const data  = scrap.dataOperations(Dataset.app);
+        data.then((data) =>{
+            cb(null, data);
+        });
+    }
+
     Dataset.remoteMethod('appDevelopment', {
         returns: { arg: 'result', type: 'object', root:true },
         http: {path: '/appDevelopment', verb: 'get'}
